@@ -1,0 +1,12 @@
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu
+    permissions:
+      packages: write
+    steps:
+      - name: Build image
+        run: docker build -t ghcr.io/iben12/dynu-updater .
+      - name: Push image
+        run: docker push ghcr.io/iben12/dynu-updater
