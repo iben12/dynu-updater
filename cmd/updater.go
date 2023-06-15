@@ -114,5 +114,7 @@ func interval(config UpdateConfig) {
 func main() {
 	updateConfig := getConfig()
 
+	fmt.Printf("Starting %v-hour interval updates...\n", updateConfig.Period)
+
 	interval(updateConfig)
 }
