@@ -1,10 +1,10 @@
 FROM golang:1.20 as builder
 
+COPY . /src
+
 WORKDIR /src
 
-COPY . .
-
-RUN CGO_ENABLED=0 go build -o ./build/dynu-updater ./cmd
+RUN CGO_ENABLED=0 go build -o /src/build/dynu-updater /src/cmd
 
 
 FROM scratch

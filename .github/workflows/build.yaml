@@ -6,6 +6,7 @@ jobs:
     permissions:
       packages: write
     steps:
+      - uses: actions/checkout@v3
       - name: Build image
         run: docker build -t ghcr.io/iben12/dynu-updater .
       - name: Push image
