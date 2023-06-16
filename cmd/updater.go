@@ -12,15 +12,19 @@ import (
 	"time"
 )
 
+var logger = log.New(os.Stdout, "", 5)
+
 type IPResponse struct {
 	Ip string `json:"ip"`
 }
 
 type UpdateConfig struct {
-	User     string
-	Password string
-	Domain   string
-	Period   int
+	User      string
+	Password  string
+	Domain    string
+	Period    int
+	ServerURL string
+	IpServer  string
 }
 
 func getConfig() UpdateConfig {
@@ -30,18 +34,18 @@ func getConfig() UpdateConfig {
 	period := os.Getenv("PERIOD_HOURS")
 
 	if user == "" {
-		log.Fatal("Please set USERNAME env variable.")
+		logger.Fatal("Please set USERNAME env variable.")
 	} else if password == "" {
-		log.Fatal("Please set PASSWORD env variable.")
+		logger.Fatal("Please set PASSWORD env variable.")
 	} else if domain == "" {
-		log.Fatal("Please set DOMAIN env variable.")
+		logger.Fatal("Please set DOMAIN env variable.")
 	} else if period == "" {
-		log.Fatal("Please set PERIOD_HOURS env variable.")
+		logger.Fatal("Please set PERIOD_HOURS env variable.")
 	}
 
 	parsedPeriod, err := strconv.Atoi(period)
 	if err != nil {
-		log.Fatal("Please set PERIOD_HOURS to valid integer")
+		logger.Fatal("Please set PERIOD_HOURS to valid integer")
 	}
 
 	updateConfig := UpdateConfig{
@@ -54,15 +58,15 @@ func getConfig() UpdateConfig {
 	return updateConfig
 }
 
-func getIP() string {
-	resp, err := http.Get("https://api.myip.com")
+func getIP(ipApiUrl string) string {
+	resp, err := http.Get(ipApiUrl)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	var ipResponse IPResponse
@@ -73,7 +77,8 @@ func getIP() string {
 }
 
 func updateIp(config UpdateConfig, ip string) error {
-	resp, err := http.Get(fmt.Sprintf(`https://api.dynu.com/nic/update?hostname=%s&myip=%s&username=%s&password=%s`, config.Domain, ip, config.User, config.Password))
+	query := fmt.Sprintf(`?hostname=%s&myip=%s&username=%s&password=%s`, config.Domain, ip, config.User, config.Password)
+	resp, err := http.Get(fmt.Sprintf(`%s%s`, config.ServerURL, query))
 	if err != nil {
 		return err
 	}
@@ -83,21 +88,21 @@ func updateIp(config UpdateConfig, ip string) error {
 		return err
 	}
 
-	fmt.Println("Update result is:", string(body))
+	logger.Println("Update result is:", string(body))
 
 	return nil
 }
 
 func doUpdate(config UpdateConfig) {
-	ip := getIP()
+	ip := getIP(config.IpServer)
 
-	fmt.Println("Current IP is", ip)
-	fmt.Println("Updating Dynu...")
+	logger.Println("Current IP is", ip)
+	logger.Println("Updating Dynu...")
 
 	err := updateIp(config, ip)
 
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 }
 
@@ -114,9 +119,12 @@ func interval(config UpdateConfig) {
 func main() {
 	updateConfig := getConfig()
 
+	updateConfig.ServerURL = "https://api.dynu.com/nic/update"
+	updateConfig.IpServer = "https://api.myip.com"
+
 	doUpdate(updateConfig)
 
-	fmt.Printf("Starting %v-hour interval updates...\n", updateConfig.Period)
+	logger.Printf("Starting %v-hour interval updates...\n", updateConfig.Period)
 
 	interval(updateConfig)
 }
