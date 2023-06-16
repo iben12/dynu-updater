@@ -6,9 +6,10 @@ import (
 	"net/http"
 )
 
-func updateIp(config UpdateConfig, ip string) error {
-	query := fmt.Sprintf(`hostname=%s&myip=%s&username=%s&password=%s`, config.Domain, ip, config.User, config.Password)
+func updateIp(config Config, ip string) error {
+	query := fmt.Sprintf(`hostname=%s&myip=%s&username=%s&password=%s`, config.Domain, ip, config.User, config.Secret)
 	resp, err := http.Get(fmt.Sprintf(`%s?%s`, config.ServerURL, query))
+
 	if err != nil {
 		return err
 	}
@@ -18,12 +19,18 @@ func updateIp(config UpdateConfig, ip string) error {
 		return err
 	}
 
-	logger.Println("Update result is:", string(body))
+	code := string(body)
+
+	if code != "good" && code != "nochg" {
+		logger.Fatal("Update failed. Error code: ", code)
+	}
+
+	logger.Println("Update result is:", code)
 
 	return nil
 }
 
-func doUpdate(config UpdateConfig) {
+func doUpdate(config Config) {
 	ip := getIP(config.IpServer)
 
 	logger.Println("Current IP is", ip)

@@ -13,14 +13,15 @@ func TestUpdateIP(t *testing.T) {
 	// Create a test server to simulate the API response
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("nochg"))
 	})
 
 	server := httptest.NewServer(handler)
 	defer server.Close()
 
-	config := UpdateConfig{
+	config := Config{
 		User:      "testuser",
-		Password:  "testpass",
+		Secret:    "testpass",
 		Domain:    "example.com",
 		ServerURL: server.URL,
 	}
@@ -53,9 +54,9 @@ func TestDoUpdate(t *testing.T) {
 	dynuServer := httptest.NewServer(dynuHandler)
 	defer dynuServer.Close()
 
-	config := UpdateConfig{
+	config := Config{
 		User:      "testuser",
-		Password:  "testpass",
+		Secret:    "testpass",
 		Domain:    "example.com",
 		ServerURL: dynuServer.URL,
 		IpServer:  ipServer.URL,

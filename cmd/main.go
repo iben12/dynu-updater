@@ -8,16 +8,16 @@ import (
 
 var logger = log.New(os.Stdout, "", 5)
 
-type UpdateConfig struct {
+type Config struct {
 	User      string
-	Password  string
+	Secret    string
 	Domain    string
 	Period    int
 	ServerURL string
 	IpServer  string
 }
 
-func startInterval(config UpdateConfig) {
+func startInterval(config Config) {
 	t := time.NewTicker(time.Duration(config.Period) * time.Hour)
 
 	defer t.Stop()
