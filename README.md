@@ -26,7 +26,7 @@ A simple Go program to update domain IP address on [Dynu](https://dynu.com). It 
 - Copy the `.env_example` file to `.env` and replace test config
 - Execute `make d-run`
 
-Or simply run the public Docker image with (it has `x86/amd64` and `arm64` versions):
+Or simply run the public Docker image (it has `x86/amd64` and `arm64` versions) with:
 
 ```shell
 docker run ghcr.io/iben12/dynu-updater \
