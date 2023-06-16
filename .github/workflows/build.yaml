@@ -7,8 +7,16 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v3
+      - name: Install buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          buildx-version: latest
+          qemu-version: latest
       - name: Build image
-        run: docker build -t ghcr.io/iben12/dynu-updater .
+        run: docker buildx build --push \
+          --tag ghcr.io/iben12/dynu-updater:${{ github.sha }} \
+          --platform linux/amd64,linux/arm64 .
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -16,4 +24,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push image
-        run: docker push ghcr.io/iben12/dynu-updater
+        run: docker push --all-tags ghcr.io/iben12/dynu-updater
