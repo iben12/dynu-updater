@@ -14,7 +14,8 @@ jobs:
           buildx-version: latest
           qemu-version: latest
       - name: Build image
-        run: docker buildx build --push \
+        run: |
+          docker buildx build --push \
           --tag ghcr.io/iben12/dynu-updater:${{ github.sha }} \
           --platform linux/amd64,linux/arm64 .
       - name: Log in to the Container registry
