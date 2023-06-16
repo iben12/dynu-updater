@@ -32,7 +32,7 @@ func TestGetConfig(t *testing.T) {
 
 	config = getConfig()
 
-	expectedConfig.Secret = fmt.Sprintf("%v", sha256.Sum256([]byte("testpass")))
+	expectedConfig.Secret = fmt.Sprintf("%x", sha256.Sum256([]byte("testpass")))
 
 	if config != expectedConfig {
 		t.Errorf("Expected secret: %s, got: %s", expectedConfig.Secret, config.Secret)

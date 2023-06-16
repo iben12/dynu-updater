@@ -13,7 +13,7 @@ func TestUpdateIP(t *testing.T) {
 	// Create a test server to simulate the API response
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("nochg"))
+		w.Write([]byte("good 1.2.3.4"))
 	})
 
 	server := httptest.NewServer(handler)

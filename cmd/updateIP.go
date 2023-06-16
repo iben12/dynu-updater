@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func updateIp(config Config, ip string) error {
@@ -19,7 +20,7 @@ func updateIp(config Config, ip string) error {
 		return err
 	}
 
-	code := string(body)
+	code := strings.Split(string(body), " ")[0]
 
 	if code != "good" && code != "nochg" {
 		logger.Fatal("Update failed. Error code: ", code)
