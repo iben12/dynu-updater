@@ -2,64 +2,12 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
-
-func TestGetConfig(t *testing.T) {
-	// Set up the environment variables for testing
-	os.Setenv("USERNAME", "testuser")
-	os.Setenv("PASSWORD", "testpass")
-	os.Setenv("DOMAIN", "example.com")
-	os.Setenv("PERIOD_HOURS", "1")
-
-	expectedConfig := UpdateConfig{
-		User:     "testuser",
-		Password: fmt.Sprintf("%v", sha256.Sum256([]byte("testpass"))),
-		Domain:   "example.com",
-		Period:   1,
-	}
-
-	config := getConfig()
-
-	if config.User != expectedConfig.User {
-		t.Errorf("Expected user: %s, got: %s", expectedConfig.User, config.User)
-	}
-
-	// Clean up the environment variables after the test
-	os.Unsetenv("USERNAME")
-	os.Unsetenv("PASSWORD")
-	os.Unsetenv("DOMAIN")
-	os.Unsetenv("PERIOD_HOURS")
-}
-
-func TestGetIP(t *testing.T) {
-	// Create a test server to simulate the API response
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		response := IPResponse{
-			Ip: "127.0.0.1",
-		}
-
-		json.NewEncoder(w).Encode(response)
-	})
-
-	server := httptest.NewServer(handler)
-	defer server.Close()
-
-	ipAPIURL := server.URL
-
-	ip := getIP(ipAPIURL)
-
-	if ip != "127.0.0.1" {
-		t.Errorf("Expected IP: 127.0.0.1, got: %s", ip)
-	}
-}
 
 func TestUpdateIP(t *testing.T) {
 	// Create a test server to simulate the API response

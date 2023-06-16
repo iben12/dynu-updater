@@ -4,7 +4,7 @@ COPY . /src
 
 WORKDIR /src
 
-RUN CGO_ENABLED=0 go build -o /src/build/dynu-updater /src/cmd
+RUN CGO_ENABLED=0 go build -o /src/build/dynu-updater /src/cmd/...
 
 
 FROM scratch

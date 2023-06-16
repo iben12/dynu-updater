@@ -2,10 +2,10 @@ include .env
 export
 
 build-it:
-	go build -o ./build/dynu-updater ./cmd
+	go build -o ./build/dynu-updater ./cmd/...
 run:
-	go run ./cmd/updater.go  
+	go run ./cmd/...
 d-build:
-	docker build -t iben12/dynu-updater .
+	docker build -t dynu-updater .
 d-run:
-	docker run --rm --env-file .env iben12/dynu-updater
+	docker run --rm --env-file .env dynu-updater
