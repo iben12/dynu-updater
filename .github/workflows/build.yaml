@@ -22,5 +22,5 @@ jobs:
       - name: Build and push multi-arch image
         run: |
           docker buildx build --push \
-          --tag ghcr.io/iben12/dynu-updater:${{ github.sha }} \
+          --tag ghcr.io/iben12/dynu-updater:latest \
           --platform linux/amd64,linux/arm64 .
