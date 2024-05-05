@@ -1,32 +1,45 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 )
 
 func updateIp(config Config, ip string) error {
-	query := fmt.Sprintf(`hostname=%s&myip=%s&username=%s&password=%s`, config.Domain, ip, config.User, config.Secret)
-	resp, err := http.Get(fmt.Sprintf(`%s?%s`, config.ServerURL, query))
+	client := http.Client{}
+
+	data := fmt.Sprintf(`{"ipv4Address":"%s","name":"%s","id":"%s"}`, ip, config.Domain, config.DnsId)
+	request, err := http.NewRequest("POST", config.ServerURL, bytes.NewBuffer([]byte(data)))
 
 	if err != nil {
 		return err
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	request.Header = http.Header{
+		"Accept":  {"application/json"},
+		"API-Key": {config.ApiKey},
+	}
+
+	response, err := client.Do(request)
+
 	if err != nil {
+		logger.Println(err)
+
 		return err
 	}
 
-	code := strings.Split(string(body), " ")[0]
+	if response.Status != "200 OK" {
+		body, _ := io.ReadAll(response.Body)
 
-	if code != "good" && code != "nochg" {
-		logger.Fatal("Update failed. Error code: ", code)
+		logger.Println(string(body))
+
+		return errors.New(response.Status)
 	}
 
-	logger.Println("Update result is:", code)
+	logger.Println("Update result is:", response.Status)
 
 	return nil
 }

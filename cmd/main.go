@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -9,8 +10,8 @@ import (
 var logger = log.New(os.Stdout, "", 5)
 
 type Config struct {
-	User      string
-	Secret    string
+	ApiKey    string
+	DnsId     string
 	Domain    string
 	Period    int
 	ServerURL string
@@ -31,6 +32,7 @@ func main() {
 	updateConfig := getConfig()
 
 	updateConfig.ServerURL = "https://api.dynu.com/nic/update"
+	updateConfig.ServerURL = fmt.Sprintf("https://api.dynu.com/v2/dns/%s", updateConfig.DnsId)
 	updateConfig.IpServer = "https://api.myip.com"
 
 	doUpdate(updateConfig)
